@@ -20,8 +20,9 @@ type Token struct {
 	Str  string
 	Type TokenType
 	Line int
+	Col  int
 }
 
 func (t Token) String() string {
-	return fmt.Sprintf("%d %s %#v", t.Line, t.Type, t.Str)
+	return fmt.Sprintf("%d:%d %s %#v", t.Line, t.Col, t.Type, t.Str)
 }

@@ -17,6 +17,7 @@ func NewLexer(r io.Reader) *Lexer {
 	return &Lexer{
 		buf:  bufio.NewReader(r),
 		line: 1,
+		col:  1,
 	}
 }
 
