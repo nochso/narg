@@ -24,23 +24,17 @@ func (tt TokenType) IsError() bool {
 }
 
 func (tt TokenType) Error(t Token) error {
-	if tt == TokenInvalidValueMissingClosingQuote {
-		return fmt.Errorf(
-			"error on line %d, column %d: quoted value is missing closing quote: %#v",
-			t.Line,
-			t.Col,
-			t.Str,
-		)
+	if !tt.IsError() {
+		return nil
 	}
-	if tt == TokenInvalidValueMissingSeparator {
-		return fmt.Errorf(
-			"error on line %d, column %d: value is missing separator from next value: %#v",
-			t.Line,
-			t.Col,
-			t.Str,
-		)
+	msg := "unsupported token"
+	switch tt {
+	case TokenInvalidValueMissingClosingQuote:
+		msg = "quoted value is missing closing quote"
+	case TokenInvalidValueMissingSeparator:
+		msg = "value is missing separator from next value"
 	}
-	return nil
+	return fmt.Errorf("error on line %d, column %d: %s: %#v", t.Line, t.Col, msg, t.Str)
 }
 
 type Token struct {
