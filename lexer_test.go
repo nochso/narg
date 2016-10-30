@@ -69,6 +69,25 @@ func TestLexer_Scan(t *testing.T) {
 	}
 }
 
+func TestLexer_Scan_error(t *testing.T) {
+	tester := func(c golden.Case) []byte {
+		c.T.Parallel()
+		r := c.In.Reader()
+		defer r.Close()
+		l := NewLexer(r)
+		act := &bytes.Buffer{}
+		for l.Scan() {
+			act.WriteString(l.Token.String())
+			act.WriteByte('\n')
+		}
+		act.WriteString(l.Token.Error().Error())
+		return act.Bytes()
+	}
+	for tc := range golden.Dir(t, "error") {
+		tc.Test(tester, *update)
+	}
+}
+
 func cmp(t *testing.T, exp, act interface{}) {
 	t.Fatalf("expected %#v; got %#v", exp, act)
 }
