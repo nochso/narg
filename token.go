@@ -1,6 +1,6 @@
 //go:generate stringer -type TokenType
 
-package cml
+package narg
 
 import "fmt"
 
