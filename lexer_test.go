@@ -47,24 +47,25 @@ func init() {
 var update = flag.Bool("update", false, "update golden test files")
 
 func TestLexer_Scan(t *testing.T) {
+	tester := func(c golden.Case) []byte {
+		c.T.Parallel()
+		r := c.In.Reader()
+		defer r.Close()
+		l := NewLexer(r)
+		act := &bytes.Buffer{}
+		for l.Scan() {
+			if act.Len() > 0 {
+				act.WriteByte('\n')
+			}
+			act.WriteString(l.Token.String())
+		}
+		if l.Token.Error() != nil {
+			c.T.Error(l.Token.Error())
+		}
+		return act.Bytes()
+	}
 	for tc := range golden.Dir(t, "ok") {
-		tc.Test(func(c golden.Case) []byte {
-			c.T.Parallel()
-			r := c.In.Reader()
-			defer r.Close()
-			l := NewLexer(r)
-			act := &bytes.Buffer{}
-			for l.Scan() {
-				if act.Len() > 0 {
-					act.WriteByte('\n')
-				}
-				act.WriteString(l.Token.String())
-			}
-			if l.Token.Error() != nil {
-				tc.T.Error(l.Token.Error())
-			}
-			return act.Bytes()
-		}, *update)
+		tc.Test(tester, *update)
 	}
 }
 
