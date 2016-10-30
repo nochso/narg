@@ -10,6 +10,7 @@ import (
 )
 
 func TestLexer_read(t *testing.T) {
+	t.Parallel()
 	l := NewLexer(strings.NewReader("a"))
 	r := l.read()
 	if r != 'a' {
@@ -23,6 +24,7 @@ func TestLexer_read(t *testing.T) {
 }
 
 func TestLexer_unread(t *testing.T) {
+	t.Parallel()
 	l := NewLexer(strings.NewReader("a"))
 	r := l.read()
 	if r != 'a' {
@@ -47,6 +49,7 @@ var update = flag.Bool("update", false, "update golden test files")
 func TestLexer_Scan(t *testing.T) {
 	for tc := range golden.Dir(t, "ok") {
 		tc.Test(func(c golden.Case) []byte {
+			c.T.Parallel()
 			r := c.In.Reader()
 			defer r.Close()
 			l := NewLexer(r)
