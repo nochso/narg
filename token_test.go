@@ -9,7 +9,7 @@ func TestToken_String(t *testing.T) {
 		Type: TokenUnquotedValue,
 		Str:  "abc",
 	}
-	act := tok.String()
+	act := tok.DebugString()
 	exp := `1:1 TokenUnquotedValue "abc"`
 	if exp != act {
 		t.Fatalf("expected %#v; got %#v", exp, act)
@@ -18,7 +18,7 @@ func TestToken_String(t *testing.T) {
 	// Invalid/unknown TokenType
 	tok.Type = -1
 	exp = `1:1 TokenType(-1) "abc"`
-	act = tok.String()
+	act = tok.DebugString()
 	if exp != act {
 		t.Fatalf("expected %#v; got %#v", exp, act)
 	}

@@ -49,6 +49,6 @@ func (t Token) Error() error {
 	return t.Type.Error(t)
 }
 
-func (t Token) String() string {
+func (t Token) DebugString() string {
 	return fmt.Sprintf("%d:%d %s %#v", t.Line, t.Col, t.Type, t.Str)
 }
