@@ -6,11 +6,11 @@ func TestToken_String(t *testing.T) {
 	tok := Token{
 		Line: 1,
 		Col:  1,
-		Type: TokenValue,
+		Type: TokenUnquotedValue,
 		Str:  "abc",
 	}
 	act := tok.String()
-	exp := `1:1 TokenValue "abc"`
+	exp := `1:1 TokenUnquotedValue "abc"`
 	if exp != act {
 		t.Fatalf("expected %#v; got %#v", exp, act)
 	}

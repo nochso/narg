@@ -13,7 +13,8 @@ const (
 	TokenComment
 	TokenBraceOpen
 	TokenBraceClose
-	TokenValue
+	TokenQuotedValue
+	TokenUnquotedValue
 	TokenInvalidValueMissingClosingQuote
 	TokenInvalidValueMissingSeparator
 )

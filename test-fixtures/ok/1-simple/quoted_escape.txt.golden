@@ -1,1 +1,1 @@
-1:1 TokenValue "\"abc \\\"def\\\" \\\\\""
+1:1 TokenQuotedValue "\"abc \\\"def\\\" \\\\\""

@@ -60,7 +60,7 @@ func (l *Lexer) scan() Token {
 	if isWhitespace(r) {
 		return l.scanWhile(r, TokenWhitespace, isWhitespace)
 	}
-	t := l.scanWhile(r, TokenValue, isUnquotedValue)
+	t := l.scanWhile(r, TokenUnquotedValue, isUnquotedValue)
 	return l.notFollowedBy(t, TokenInvalidValueMissingSeparator, isQuote)
 }
 
@@ -99,7 +99,7 @@ func (l *Lexer) scanQuotedValue() Token {
 	if r == eof {
 		return l.newToken(buf.String(), TokenInvalidValueMissingClosingQuote)
 	}
-	t := l.newToken(buf.String(), TokenValue)
+	t := l.newToken(buf.String(), TokenQuotedValue)
 	return l.notFollowedBy(t, TokenInvalidValueMissingSeparator, invalidAfterQuotedValue)
 }
 
