@@ -9,6 +9,12 @@ import (
 	"github.com/nochso/golden"
 )
 
+func init() {
+	golden.BasePath = "test-fixtures"
+}
+
+var update = flag.Bool("update", false, "update golden test files")
+
 func TestLexer_read(t *testing.T) {
 	t.Parallel()
 	l := NewLexer(strings.NewReader("a"))
@@ -39,12 +45,6 @@ func TestLexer_unread(t *testing.T) {
 		cmp(t, nil, err)
 	}
 }
-
-func init() {
-	golden.BasePath = "test-fixtures"
-}
-
-var update = flag.Bool("update", false, "update golden test files")
 
 func TestLexer_Scan(t *testing.T) {
 	tester := func(c golden.Case) []byte {
