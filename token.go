@@ -2,7 +2,10 @@
 
 package narg
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+)
 
 type TokenType int
 
@@ -39,6 +42,8 @@ func (tt TokenType) Error(t Token) error {
 }
 
 type Token struct {
+	// Raw string including double quotes.
+	// Use String() for a cleaned up version.
 	Str  string
 	Type TokenType
 	Line int
@@ -49,6 +54,31 @@ func (t Token) Error() error {
 	return t.Type.Error(t)
 }
 
+func (t Token) String() string {
+	if t.Type != TokenQuotedValue {
+		return t.Str
+	}
+	buf := &bytes.Buffer{}
+	i := 0
+	escaped := false
+	for _, r := range t.Str {
+		i++
+		if i == 1 {
+			continue
+		}
+		if !escaped && r == '\\' {
+			escaped = true
+			continue
+		}
+		if !escaped && r == '"' {
+			break
+		}
+		buf.WriteRune(r)
+		escaped = false
+	}
+	return buf.String()
+}
+
 func (t Token) DebugString() string {
-	return fmt.Sprintf("%d:%d %s %#v", t.Line, t.Col, t.Type, t.Str)
+	return fmt.Sprintf("%d:%d %s %#v", t.Line, t.Col, t.Type, t.String())
 }
