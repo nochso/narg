@@ -1,6 +1,7 @@
 package cml
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -31,6 +32,14 @@ func TestLexer_unread(t *testing.T) {
 	err = l.unread()
 	if err == nil {
 		cmp(t, nil, err)
+	}
+}
+
+func TestLexer_Scan(t *testing.T) {
+	in := `{}`
+	l := NewLexer(strings.NewReader(in))
+	for l.Scan() {
+		fmt.Println(l.Token)
 	}
 }
 
