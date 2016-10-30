@@ -2,6 +2,8 @@
 
 package cml
 
+import "fmt"
+
 type TokenType int
 
 const (
@@ -13,3 +15,13 @@ const (
 	TokenBraceClose
 	TokenValue
 )
+
+type Token struct {
+	Str  string
+	Type TokenType
+	Line int
+}
+
+func (t Token) String() string {
+	return fmt.Sprintf("%d %s %#v", t.Line, t.Type, t.Str)
+}
