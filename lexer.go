@@ -2,6 +2,7 @@ package cml
 
 import (
 	"bufio"
+	"bytes"
 	"io"
 	"strings"
 	"unicode/utf8"
@@ -37,7 +38,7 @@ func (l *Lexer) Scan() bool {
 	}
 	l.col += utf8.RuneCountInString(l.Token.Str[lastIndex:])
 
-	return l.Token.Type != TokenEOF
+	return l.Token.Type != TokenEOF && !l.Token.Type.IsError()
 }
 
 func (l *Lexer) scan() Token {
@@ -51,16 +52,69 @@ func (l *Lexer) scan() Token {
 		return l.newToken(string(r), TokenBraceClose)
 	case '\n':
 		return l.newToken(string(r), TokenLinefeed)
-	// case '#':
-	// 	return l.scanComment()
-	// case '"':
-	// 	return l.scanQuotedValue()
+	case '#':
+		return l.scanWhile(r, TokenComment, continuesComment)
+	case '"':
+		return l.scanQuotedValue()
 	}
-	// whitespace
+	if isWhitespace(r) {
+		return l.scanWhile(r, TokenWhitespace, isWhitespace)
+	}
+	t := l.scanWhile(r, TokenValue, isUnquotedValue)
+	return l.notFollowedBy(t, TokenInvalidValueMissingSeparator, isQuote)
+}
 
-	// unquoted value
+func (l *Lexer) scanWhile(start rune, tokenType TokenType, fn func(rune) bool) Token {
+	buf := &bytes.Buffer{}
+	buf.WriteRune(start)
+	r := l.read()
+	for r != eof {
+		if !fn(r) {
+			l.unread()
+			break
+		}
+		buf.WriteRune(r)
+		r = l.read()
+	}
+	return l.newToken(buf.String(), tokenType)
+}
 
-	return l.newToken(string(r), -1)
+func (l *Lexer) scanQuotedValue() Token {
+	buf := bytes.NewBufferString(`"`)
+	r := l.read()
+	escaped := false
+	for r != eof {
+		buf.WriteRune(r)
+		if !escaped && r == '"' {
+			break
+		}
+		if !escaped && r == '\\' {
+			escaped = true
+			r = l.read()
+			continue
+		}
+		r = l.read()
+		escaped = false
+	}
+	if r == eof {
+		return l.newToken(buf.String(), TokenInvalidValueMissingClosingQuote)
+	}
+	t := l.newToken(buf.String(), TokenValue)
+	return l.notFollowedBy(t, TokenInvalidValueMissingSeparator, invalidAfterQuotedValue)
+}
+
+func (l *Lexer) notFollowedBy(t Token, invalidType TokenType, invalidFn func(rune) bool) Token {
+	r := l.read()
+	if r == eof {
+		return t
+	}
+	if !invalidFn(r) {
+		l.unread()
+		return t
+	}
+	t.Str += string(r)
+	t.Type = invalidType
+	return t
 }
 
 func (l *Lexer) newToken(str string, tokenType TokenType) Token {
@@ -82,4 +136,25 @@ func (l *Lexer) read() rune {
 
 func (l *Lexer) unread() error {
 	return l.buf.UnreadRune()
+}
+
+func isWhitespace(r rune) bool {
+	return r == ' ' || r == '\r' || r == '\t'
+}
+
+func isQuote(r rune) bool {
+	return r == '"'
+}
+
+func continuesComment(r rune) bool {
+	return r != '\n'
+}
+
+func invalidAfterQuotedValue(r rune) bool {
+	return isQuote(r) || isUnquotedValue(r)
+}
+
+// stop on anything meaningful
+func isUnquotedValue(r rune) bool {
+	return !isWhitespace(r) && r != '{' && r != '}' && r != '\n' && r != '#' && r != '"'
 }

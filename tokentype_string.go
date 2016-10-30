@@ -4,9 +4,9 @@ package cml
 
 import "fmt"
 
-const _TokenType_name = "TokenEOFTokenLinefeedTokenWhitespaceTokenCommentTokenBraceOpenTokenBraceCloseTokenValue"
+const _TokenType_name = "TokenEOFTokenLinefeedTokenWhitespaceTokenCommentTokenBraceOpenTokenBraceCloseTokenValueTokenInvalidValueMissingClosingQuoteTokenInvalidValueMissingSeparator"
 
-var _TokenType_index = [...]uint8{0, 8, 21, 36, 48, 62, 77, 87}
+var _TokenType_index = [...]uint8{0, 8, 21, 36, 48, 62, 77, 87, 123, 156}
 
 func (i TokenType) String() string {
 	if i < 0 || i >= TokenType(len(_TokenType_index)-1) {
