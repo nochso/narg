@@ -1,9 +1,12 @@
 package cml
 
 import (
-	"fmt"
+	"bytes"
+	"flag"
 	"strings"
 	"testing"
+
+	"github.com/nochso/golden"
 )
 
 func TestLexer_read(t *testing.T) {
@@ -35,11 +38,30 @@ func TestLexer_unread(t *testing.T) {
 	}
 }
 
+func init() {
+	golden.BasePath = "test-fixtures"
+}
+
+var update = flag.Bool("update", false, "update golden test files")
+
 func TestLexer_Scan(t *testing.T) {
-	in := `{}`
-	l := NewLexer(strings.NewReader(in))
-	for l.Scan() {
-		fmt.Println(l.Token)
+	for tc := range golden.Dir(t, "ok") {
+		tc.Test(func(c golden.Case) []byte {
+			r := c.In.Reader()
+			defer r.Close()
+			l := NewLexer(r)
+			act := &bytes.Buffer{}
+			for l.Scan() {
+				if act.Len() > 0 {
+					act.WriteByte('\n')
+				}
+				act.WriteString(l.Token.String())
+			}
+			if l.Token.Error() != nil {
+				tc.T.Error(l.Token.Error())
+			}
+			return act.Bytes()
+		}, *update)
 	}
 }
 

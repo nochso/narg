@@ -1,0 +1,6 @@
+1:1 TokenWhitespace "  \r"
+1:4 TokenLinefeed "\n"
+2:1 TokenWhitespace "\r"
+2:2 TokenLinefeed "\n"
+3:1 TokenWhitespace "\r"
+3:2 TokenLinefeed "\n"

@@ -1,0 +1,6 @@
+1:1 TokenValue "abc"
+1:4 TokenWhitespace " "
+1:5 TokenComment "#foo"
+1:9 TokenLinefeed "\n"
+2:1 TokenValue "def"
+2:4 TokenComment "#bar"
