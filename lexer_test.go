@@ -80,7 +80,9 @@ func TestLexer_Scan_error(t *testing.T) {
 			act.WriteString(l.Token.String())
 			act.WriteByte('\n')
 		}
-		act.WriteString(l.Token.Error().Error())
+		if l.Token.Type.IsError() {
+			act.WriteString(l.Token.Error().Error())
+		}
 		return act.Bytes()
 	}
 	for tc := range golden.Dir(t, "error") {
