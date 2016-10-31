@@ -5,6 +5,7 @@ package narg
 import (
 	"bytes"
 	"fmt"
+	"strings"
 )
 
 type TokenType int
@@ -55,13 +56,41 @@ func (t Token) Error() error {
 }
 
 func (t Token) String() string {
-	if t.Type != TokenQuotedValue {
-		return t.Str
+	return unquote(t.Str)
+}
+
+// Quote a string if needed.
+//
+// If needed s is surrounded with double quotes.
+// Backslashes \ and double quotes " will be escaped with backslashes.
+func quote(s string) string {
+	if !strings.ContainsAny(s, "#\"{} \t\r\n") {
+		return s
+	}
+	buf := &bytes.Buffer{}
+	buf.WriteByte('"')
+	for _, r := range s {
+		if r == '\\' || r == '"' {
+			buf.WriteByte('\\')
+		}
+		buf.WriteRune(r)
+	}
+	buf.WriteByte('"')
+	return buf.String()
+}
+
+// Unquote a string if needed.
+//
+// If s is surrounded by double quotes, escaped backslashes and double quotes
+// will be unescaped. The surrounding quotes will be removed.
+func unquote(s string) string {
+	if !strings.HasPrefix(s, `"`) || !strings.HasSuffix(s, `"`) {
+		return s
 	}
 	buf := &bytes.Buffer{}
 	i := 0
 	escaped := false
-	for _, r := range t.Str {
+	for _, r := range s {
 		i++
 		if i == 1 {
 			continue
