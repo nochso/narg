@@ -47,8 +47,8 @@ func TestLexer_unread(t *testing.T) {
 }
 
 func TestLexer_Scan(t *testing.T) {
+	t.Parallel()
 	tester := func(c golden.Case) []byte {
-		c.T.Parallel()
 		r := c.In.Reader()
 		defer r.Close()
 		l := NewLexer(r)
@@ -65,13 +65,16 @@ func TestLexer_Scan(t *testing.T) {
 		return act.Bytes()
 	}
 	for tc := range golden.Dir(t, "ok") {
-		tc.Test(tester, *update)
+		if *update {
+			tc.Out.Update(tester(tc))
+		}
+		tc.Diff(string(tester(tc)))
 	}
 }
 
 func TestLexer_Scan_error(t *testing.T) {
+	t.Parallel()
 	tester := func(c golden.Case) []byte {
-		c.T.Parallel()
 		r := c.In.Reader()
 		defer r.Close()
 		l := NewLexer(r)
@@ -86,7 +89,10 @@ func TestLexer_Scan_error(t *testing.T) {
 		return act.Bytes()
 	}
 	for tc := range golden.Dir(t, "error") {
-		tc.Test(tester, *update)
+		if *update {
+			tc.Out.Update(tester(tc))
+		}
+		tc.Diff(string(tester(tc)))
 	}
 }
 

@@ -30,5 +30,5 @@ func TestItem_String(t *testing.T) {
 	if *update {
 		tc.Out.Update([]byte(actual))
 	}
-	tc.Out.TestString(actual)
+	tc.Diff(actual)
 }
