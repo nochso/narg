@@ -60,6 +60,9 @@ func (p *Parser) parseChildren(i Item) (Item, error) {
 		i.Children = append(i.Children, child)
 		child, err = p.parse()
 	}
+	if err == errEos && child.Name != "" {
+		i.Children = append(i.Children, child)
+	}
 	return i, err
 }
 
