@@ -1,0 +1,15 @@
+first {
+	second {
+		third "teh value" {
+			when {
+				will {
+					it {
+						stop
+					}
+				}
+			}
+		}
+	}
+	hello Annyong
+}
+bye 0
