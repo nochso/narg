@@ -91,9 +91,19 @@ func (p *Parser) parseName(i Item) (Item, error) {
 func (p *Parser) parseArgs(i Item) (Item, error) {
 	for {
 		t := p.scanIgnore(TokenWhitespace, TokenComment)
-		if t.Type == TokenEOF || t.Type == TokenLinefeed {
+		if t.Type == TokenEOF {
 			// valid Item end without any (more) args
 			return i, nil
+		}
+		if t.Type == TokenLinefeed {
+			// valid end of args, but look ahead
+			t = p.scanIgnore(TokenWhitespace, TokenComment, TokenLinefeed)
+			if t.Type != TokenBraceClose && t.Type != TokenBraceOpen {
+				// nah, we can't use this. put it back.
+				p.unscan(t)
+				return i, nil
+			}
+			// fall through to open/close brace
 		}
 		if t.Error() != nil {
 			return i, t.Error()
