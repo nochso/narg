@@ -1,0 +1,9 @@
+first {
+    second {
+        third "teh value"
+        foo
+    }
+    hello "Annyong"
+}
+
+bye 0
