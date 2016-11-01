@@ -36,3 +36,13 @@ func TestItem_String(t *testing.T) {
 	}
 	tc.Diff(actual)
 }
+
+func TestDoc_String(t *testing.T) {
+	doc := Doc{getTestItem(), getTestItem()}
+	actual := doc.String()
+	tc := golden.NewCase(t, "test-fixtures/doc.txt")
+	if *update {
+		tc.Out.Update([]byte(actual))
+	}
+	tc.Diff(actual)
+}

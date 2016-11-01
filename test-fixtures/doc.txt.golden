@@ -1,0 +1,18 @@
+key arg1 "argument 2" {
+	"wait, there's more" {
+		"foo#not-a-comment" bar "now with \"quotes\""
+	}
+	"!\"§$%&/()=?{[]}\\;:_,.-Ü*ü+ÖÄ'öä#|<>@µ" {
+		1
+		2
+	}
+}
+key arg1 "argument 2" {
+	"wait, there's more" {
+		"foo#not-a-comment" bar "now with \"quotes\""
+	}
+	"!\"§$%&/()=?{[]}\\;:_,.-Ü*ü+ÖÄ'öä#|<>@µ" {
+		1
+		2
+	}
+}
