@@ -6,8 +6,8 @@ import (
 	"github.com/nochso/golden"
 )
 
-func TestItem_String(t *testing.T) {
-	i := Item{
+func getTestItem() Item {
+	return Item{
 		Name: "key",
 		Args: []string{"arg1", "argument 2"},
 		Children: []Item{{
@@ -24,6 +24,10 @@ func TestItem_String(t *testing.T) {
 			},
 		}},
 	}
+}
+
+func TestItem_String(t *testing.T) {
+	i := getTestItem()
 	actual := i.String()
 
 	tc := golden.NewCase(t, "test-fixtures/item.txt")
