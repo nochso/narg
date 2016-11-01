@@ -1,0 +1,18 @@
+http://caddyserver.com https://caddyserver.com {
+	tls "caddy bundle.crt" caddy.key
+	root /www/caddyserver.com
+	ext .html .md
+	gzip
+	errors {
+		log error.log
+		404 404.html
+	}
+	templates
+	proxy /download/build localhost:5050
+	proxy /features.json localhost:5050
+}
+http://matt.life {
+	root /www/matt.life
+	ext .html
+	gzip
+}
