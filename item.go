@@ -33,10 +33,10 @@ func (i Item) String() string {
 func (i Item) writeString(buf *bytes.Buffer, indent int) {
 	prefix := strings.Repeat("\t", indent)
 	buf.WriteString(prefix)
-	buf.WriteString(quote(i.Name))
+	buf.WriteString(Quote(i.Name))
 	for _, arg := range i.Args {
 		buf.WriteByte(' ')
-		buf.WriteString(quote(arg))
+		buf.WriteString(Quote(arg))
 	}
 	if len(i.Children) > 0 {
 		buf.WriteString(" {\n")

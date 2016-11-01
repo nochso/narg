@@ -56,14 +56,14 @@ func (t Token) Error() error {
 }
 
 func (t Token) String() string {
-	return unquote(t.Str)
+	return Unquote(t.Str)
 }
 
 // Quote a string if needed.
 //
 // If needed s is surrounded with double quotes.
 // Backslashes \ and double quotes " will be escaped with backslashes.
-func quote(s string) string {
+func Quote(s string) string {
 	if !strings.ContainsAny(s, "#\"{} \t\r\n") {
 		return s
 	}
@@ -83,7 +83,7 @@ func quote(s string) string {
 //
 // If s is surrounded by double quotes, escaped backslashes and double quotes
 // will be unescaped. The surrounding quotes will be removed.
-func unquote(s string) string {
+func Unquote(s string) string {
 	if !strings.HasPrefix(s, `"`) || !strings.HasSuffix(s, `"`) {
 		return s
 	}
