@@ -39,7 +39,7 @@ func (tt TokenType) Error(t Token) error {
 	case TokenInvalidValueMissingSeparator:
 		msg = "value is missing separator from next value"
 	}
-	return fmt.Errorf("error on line %d, column %d: %s: %#v", t.Line, t.Col, msg, t.Str)
+	return fmt.Errorf("line %d, column %d: %s: %#v", t.Line, t.Col, msg, t.Str)
 }
 
 type Token struct {
