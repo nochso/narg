@@ -8,6 +8,7 @@ import (
 
 func TestParse_Ok(t *testing.T) {
 	golden.TestDir(t, "parser/ok", func(tc golden.Case) {
+		tc.T.Parallel()
 		r := tc.In.Reader()
 		doc, err := Parse(r)
 		r.Close()
@@ -23,6 +24,7 @@ func TestParse_Ok(t *testing.T) {
 
 func TestParse_Error(t *testing.T) {
 	golden.TestDir(t, "parser/error", func(tc golden.Case) {
+		tc.T.Parallel()
 		r := tc.In.Reader()
 		_, err := Parse(r)
 		r.Close()

@@ -64,12 +64,13 @@ func TestLexer_Scan(t *testing.T) {
 		}
 		return act.Bytes()
 	}
-	for tc := range golden.Dir(t, "lexer/ok") {
+	golden.TestDir(t, "lexer/ok", func(tc golden.Case) {
+		tc.T.Parallel()
 		if *update {
 			tc.Out.Update(tester(tc))
 		}
 		tc.Diff(string(tester(tc)))
-	}
+	})
 }
 
 func TestLexer_Scan_error(t *testing.T) {
@@ -88,12 +89,13 @@ func TestLexer_Scan_error(t *testing.T) {
 		}
 		return act.Bytes()
 	}
-	for tc := range golden.Dir(t, "lexer/error") {
+	golden.TestDir(t, "lexer/error", func(tc golden.Case) {
+		tc.T.Parallel()
 		if *update {
 			tc.Out.Update(tester(tc))
 		}
 		tc.Diff(string(tester(tc)))
-	}
+	})
 }
 
 func cmp(t *testing.T, exp, act interface{}) {
