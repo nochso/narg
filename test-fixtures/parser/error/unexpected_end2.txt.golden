@@ -1,1 +1,1 @@
-nested items not yet implemented
+line 1, column 2: expected quoted or unquoted value at beginning of item, got TokenBraceClose "}"
