@@ -12,7 +12,8 @@ func Parse(r io.Reader) (Doc, error) {
 }
 
 type Parser struct {
-	l *Lexer
+	l   *Lexer
+	buf []Token
 }
 
 // Parse all items.
@@ -108,9 +109,22 @@ func (p *Parser) parseArgs(i Item) (Item, error) {
 	}
 }
 
+func (p *Parser) scan() (t Token) {
+	if len(p.buf) > 0 {
+		t, p.buf = p.buf[len(p.buf)-1], p.buf[:len(p.buf)-1]
+		return
+	}
+	p.l.Scan()
+	return p.l.Token
+}
+
+func (p *Parser) unscan(t Token) {
+	p.buf = append(p.buf, t)
+}
+
 func (p *Parser) scanIgnore(ignore ...TokenType) Token {
-	for p.l.Scan() {
-		t := p.l.Token
+	t := p.scan()
+	for t.Type != TokenEOF && !t.Type.IsError() {
 		ignored := false
 		for _, it := range ignore {
 			if t.Type == it {
@@ -121,6 +135,7 @@ func (p *Parser) scanIgnore(ignore ...TokenType) Token {
 		if !ignored {
 			return t
 		}
+		t = p.scan()
 	}
-	return p.l.Token
+	return t
 }
