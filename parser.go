@@ -54,7 +54,7 @@ func (p *Parser) parseName(i Item) (Item, error) {
 
 func (p *Parser) parseArgs(i Item) (Item, error) {
 	for {
-		t := p.scanIgnore(TokenWhitespace)
+		t := p.scanIgnore(TokenWhitespace, TokenComment)
 		if t.Type == TokenEOF || t.Type == TokenLinefeed {
 			// valid Item end without any (more) args
 			return i, nil
