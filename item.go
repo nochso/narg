@@ -13,6 +13,17 @@ type Item struct {
 	Children []Item
 }
 
+func (d Doc) String() string {
+	buf := &bytes.Buffer{}
+	for i, item := range d {
+		if i > 0 {
+			buf.WriteByte('\n')
+		}
+		item.writeString(buf, 0)
+	}
+	return buf.String()
+}
+
 func (i Item) String() string {
 	buf := &bytes.Buffer{}
 	i.writeString(buf, 0)
