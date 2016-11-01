@@ -42,7 +42,7 @@ func (i Item) writeString(buf *bytes.Buffer, indent int) {
 		buf.WriteString(" {\n")
 		for _, child := range i.Children {
 			child.writeString(buf, indent+1)
-		    buf.WriteByte('\n')
+			buf.WriteByte('\n')
 		}
 		buf.WriteString(prefix)
 		buf.WriteString("}")
