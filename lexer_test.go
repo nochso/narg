@@ -64,7 +64,7 @@ func TestLexer_Scan(t *testing.T) {
 		}
 		return act.Bytes()
 	}
-	for tc := range golden.Dir(t, "ok") {
+	for tc := range golden.Dir(t, "lexer/ok") {
 		if *update {
 			tc.Out.Update(tester(tc))
 		}
@@ -88,7 +88,7 @@ func TestLexer_Scan_error(t *testing.T) {
 		}
 		return act.Bytes()
 	}
-	for tc := range golden.Dir(t, "error") {
+	for tc := range golden.Dir(t, "lexer/error") {
 		if *update {
 			tc.Out.Update(tester(tc))
 		}

@@ -30,7 +30,7 @@ func TestItem_String(t *testing.T) {
 	i := getTestItem()
 	actual := i.String()
 
-	tc := golden.NewCase(t, "test-fixtures/item.txt")
+	tc := golden.NewCase(t, "test-fixtures/item/item.txt")
 	if *update {
 		tc.Out.Update([]byte(actual))
 	}
@@ -40,7 +40,7 @@ func TestItem_String(t *testing.T) {
 func TestDoc_String(t *testing.T) {
 	doc := Doc{getTestItem(), getTestItem()}
 	actual := doc.String()
-	tc := golden.NewCase(t, "test-fixtures/doc.txt")
+	tc := golden.NewCase(t, "test-fixtures/item/doc.txt")
 	if *update {
 		tc.Out.Update([]byte(actual))
 	}
