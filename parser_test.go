@@ -1,7 +1,10 @@
 package narg
 
 import (
+	"bytes"
 	"testing"
+
+	"io/ioutil"
 
 	"github.com/nochso/golden"
 )
@@ -33,4 +36,18 @@ func TestParse_Error(t *testing.T) {
 		}
 		tc.Diff(err.Error())
 	})
+}
+
+func BenchmarkParse(b *testing.B) {
+	in, err := ioutil.ReadFile("test-fixtures/parser/ok/2-typical/caddy.txt")
+	if err != nil {
+		b.Error(err)
+		return
+	}
+	for i := 0; i < b.N; i++ {
+		_, err := Parse(bytes.NewReader(in))
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
 }
