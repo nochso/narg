@@ -5,17 +5,17 @@ import (
 	"strings"
 )
 
-type Doc []Item
+type ItemSlice []Item
 
 type Item struct {
 	Name     string
 	Args     []string
-	Children []Item
+	Children ItemSlice
 }
 
-func (d Doc) String() string {
+func (s ItemSlice) String() string {
 	buf := &bytes.Buffer{}
-	for i, item := range d {
+	for i, item := range s {
 		if i > 0 {
 			buf.WriteByte('\n')
 		}

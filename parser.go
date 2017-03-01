@@ -6,7 +6,7 @@ import (
 	"io"
 )
 
-func Parse(r io.Reader) (Doc, error) {
+func Parse(r io.Reader) (ItemSlice, error) {
 	p := &Parser{l: NewLexer(r)}
 	return p.Parse()
 }
@@ -17,7 +17,7 @@ type Parser struct {
 }
 
 // Parse all items.
-func (p *Parser) Parse() (Doc, error) {
+func (p *Parser) Parse() (ItemSlice, error) {
 	doc := []Item{}
 	item, err := p.parse()
 	for err == nil {

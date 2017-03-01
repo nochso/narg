@@ -37,8 +37,8 @@ func TestItem_String(t *testing.T) {
 	tc.Diff(actual)
 }
 
-func TestDoc_String(t *testing.T) {
-	doc := Doc{getTestItem(), getTestItem()}
+func TestItemSlice_String(t *testing.T) {
+	doc := ItemSlice{getTestItem(), getTestItem()}
 	actual := doc.String()
 	tc := golden.NewCase(t, "test-fixtures/item/doc.txt")
 	if *update {
