@@ -3,8 +3,7 @@ package main
 import (
 	"log"
 	"os/exec"
-
-	"github.com/nochso/buildutil"
+	"strings"
 )
 
 func main() {
@@ -16,5 +15,11 @@ func main() {
 }
 
 func run(name string, args ...string) {
-	buildutil.ExecLog(exec.Command(name, args...))
+	cmd := exec.Command(name, args...)
+	log.SetPrefix(cmd.Path + " " + strings.Join(cmd.Args, " ") + ":\n")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Printf("error: %s", err)
+		log.Println(string(out))
+	}
 }
