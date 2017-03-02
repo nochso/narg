@@ -24,6 +24,17 @@ func (s ItemSlice) String() string {
 	return buf.String()
 }
 
+func (s ItemSlice) Filter(key string) ItemSlice {
+	out := ItemSlice{}
+	key = strings.ToLower(key)
+	for _, itm := range s {
+		if strings.ToLower(itm.Name) == key {
+			out = append(out, itm)
+		}
+	}
+	return out
+}
+
 func (i Item) String() string {
 	buf := &bytes.Buffer{}
 	i.writeString(buf, 0)
