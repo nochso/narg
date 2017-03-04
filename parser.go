@@ -15,7 +15,7 @@ func Parse(r io.Reader) (ItemSlice, error) {
 
 type Parser struct {
 	l   *Lexer
-	buf []token.Token
+	buf []token.T
 }
 
 // Parse all items.
@@ -124,7 +124,7 @@ func (p *Parser) parseArgs(i Item) (Item, error) {
 	}
 }
 
-func (p *Parser) scan() (t token.Token) {
+func (p *Parser) scan() (t token.T) {
 	if len(p.buf) > 0 {
 		t, p.buf = p.buf[len(p.buf)-1], p.buf[:len(p.buf)-1]
 		return
@@ -133,11 +133,11 @@ func (p *Parser) scan() (t token.Token) {
 	return p.l.Token
 }
 
-func (p *Parser) unscan(t token.Token) {
+func (p *Parser) unscan(t token.T) {
 	p.buf = append(p.buf, t)
 }
 
-func (p *Parser) scanIgnore(ignore ...token.Type) token.Token {
+func (p *Parser) scanIgnore(ignore ...token.Type) token.T {
 	t := p.scan()
 	for t.Type != token.EOF && !t.Type.IsError() {
 		ignored := false

@@ -3,7 +3,7 @@ package token
 import "testing"
 
 func TestToken_String(t *testing.T) {
-	tok := Token{
+	tok := T{
 		Line: 1,
 		Col:  1,
 		Type: UnquotedValue,

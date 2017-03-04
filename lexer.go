@@ -13,7 +13,7 @@ import (
 // Lexer reads narg input and parses it into tokens.
 type Lexer struct {
 	// Token that was read after the latest successful call to Scan()
-	Token token.Token
+	Token token.T
 	buf   *bufio.Reader
 	line  int
 	col   int
@@ -48,7 +48,7 @@ func (l *Lexer) Scan() bool {
 	return l.Token.Type != token.EOF && !l.Token.Type.IsError()
 }
 
-func (l *Lexer) scan() token.Token {
+func (l *Lexer) scan() token.T {
 	r := l.read()
 	switch r {
 	case eof:
@@ -71,7 +71,7 @@ func (l *Lexer) scan() token.Token {
 	return l.notFollowedBy(t, token.InvalidValueMissingSeparator, isQuote)
 }
 
-func (l *Lexer) scanWhile(start rune, tokenType token.Type, fn func(rune) bool) token.Token {
+func (l *Lexer) scanWhile(start rune, tokenType token.Type, fn func(rune) bool) token.T {
 	buf := &bytes.Buffer{}
 	buf.WriteRune(start)
 	r := l.read()
@@ -86,7 +86,7 @@ func (l *Lexer) scanWhile(start rune, tokenType token.Type, fn func(rune) bool) 
 	return l.newToken(buf.String(), tokenType)
 }
 
-func (l *Lexer) scanQuotedValue() token.Token {
+func (l *Lexer) scanQuotedValue() token.T {
 	buf := bytes.NewBufferString(`"`)
 	r := l.read()
 	escaped := false
@@ -110,7 +110,7 @@ func (l *Lexer) scanQuotedValue() token.Token {
 	return l.notFollowedBy(t, token.InvalidValueMissingSeparator, invalidAfterQuotedValue)
 }
 
-func (l *Lexer) notFollowedBy(t token.Token, invalidType token.Type, invalidFn func(rune) bool) token.Token {
+func (l *Lexer) notFollowedBy(t token.T, invalidType token.Type, invalidFn func(rune) bool) token.T {
 	r := l.read()
 	if r == eof {
 		return t
@@ -124,8 +124,8 @@ func (l *Lexer) notFollowedBy(t token.Token, invalidType token.Type, invalidFn f
 	return t
 }
 
-func (l *Lexer) newToken(str string, tokenType token.Type) token.Token {
-	return token.Token{
+func (l *Lexer) newToken(str string, tokenType token.Type) token.T {
+	return token.T{
 		Str:  str,
 		Type: tokenType,
 		Line: l.line,

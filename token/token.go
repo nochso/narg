@@ -28,7 +28,7 @@ func (tt Type) IsError() bool {
 		tt == InvalidValueMissingSeparator
 }
 
-func (tt Type) Error(t Token) error {
+func (tt Type) Error(t T) error {
 	if !tt.IsError() {
 		return nil
 	}
@@ -42,7 +42,7 @@ func (tt Type) Error(t Token) error {
 	return fmt.Errorf("line %d, column %d: %s: %#v", t.Line, t.Col, msg, t.Str)
 }
 
-type Token struct {
+type T struct {
 	// Raw string including double quotes.
 	// Use String() for a cleaned up version.
 	Str  string
@@ -51,11 +51,11 @@ type Token struct {
 	Col  int
 }
 
-func (t Token) Error() error {
+func (t T) Error() error {
 	return t.Type.Error(t)
 }
 
-func (t Token) String() string {
+func (t T) String() string {
 	return Unquote(t.Str)
 }
 
@@ -108,6 +108,6 @@ func Unquote(s string) string {
 	return buf.String()
 }
 
-func (t Token) DebugString() string {
+func (t T) DebugString() string {
 	return fmt.Sprintf("%d:%d %s %#v", t.Line, t.Col, t.Type, t.String())
 }
