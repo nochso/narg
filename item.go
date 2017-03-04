@@ -5,14 +5,23 @@ import (
 	"strings"
 )
 
+// ItemSlice is a list of items.
 type ItemSlice []Item
 
+// Item represents a single block consisting of at least the name.
+//
+// narg input showing what part of an Item it's parsed into:
+//
+//	Name Args[0] Args[1] {
+//		Children[0].Name Children[0].Args[0]
+//	}
 type Item struct {
 	Name     string
 	Args     []string
 	Children ItemSlice
 }
 
+// String returns an indented string representation.
 func (s ItemSlice) String() string {
 	buf := &bytes.Buffer{}
 	for i, item := range s {
@@ -24,6 +33,8 @@ func (s ItemSlice) String() string {
 	return buf.String()
 }
 
+// Filter returns all items filtered by name.
+// The comparison is case-insensitive.
 func (s ItemSlice) Filter(key string) ItemSlice {
 	out := ItemSlice{}
 	key = strings.ToLower(key)
@@ -35,6 +46,7 @@ func (s ItemSlice) Filter(key string) ItemSlice {
 	return out
 }
 
+// String returns the string representation of an Item and its Children.
 func (i Item) String() string {
 	buf := &bytes.Buffer{}
 	i.writeString(buf, 0)

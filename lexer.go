@@ -8,7 +8,9 @@ import (
 	"unicode/utf8"
 )
 
+// Lexer reads narg input and parses it into tokens.
 type Lexer struct {
+	// Token that was read after the latest successful call to Scan()
 	Token Token
 	buf   *bufio.Reader
 	line  int
@@ -17,6 +19,7 @@ type Lexer struct {
 
 var eof = rune(0)
 
+// NewLexer returns a new Lexer for parsing tokens.
 func NewLexer(r io.Reader) *Lexer {
 	return &Lexer{
 		buf:  bufio.NewReader(r),
@@ -25,6 +28,8 @@ func NewLexer(r io.Reader) *Lexer {
 	}
 }
 
+// Scan attempts to read the next Token into Lexer.Token.
+// Returns true when a new Token is ready.
 func (l *Lexer) Scan() bool {
 	l.Token = l.scan()
 	l.line += strings.Count(l.Token.Str, "\n")

@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+// Decode narg input r into a given struct v.
+// v must be a pointer to the struct you want to decode into.
 func Decode(r io.Reader, v interface{}) error {
 	items, err := Parse(r)
 	if err != nil {
