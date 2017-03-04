@@ -8,9 +8,9 @@ import (
 
 func main() {
 	log.SetFlags(0)
-	run("go", "generate", "-x")
+	run("go", "generate", "-x", "./...")
 	run("goimports", "-w", ".")
-	run("go", "test", "-cover")
+	run("go", "test", "-cover", "./...")
 	run("gometalinter", ".")
 }
 

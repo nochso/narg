@@ -1,2 +1,2 @@
-1:1 TokenBraceOpen "{"
-1:2 TokenBraceClose "}"
+1:1 BraceOpen "{"
+1:2 BraceClose "}"

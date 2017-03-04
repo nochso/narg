@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+
+	"github.com/nochso/narg/token"
 )
 
 func Parse(r io.Reader) (ItemSlice, error) {
@@ -13,7 +15,7 @@ func Parse(r io.Reader) (ItemSlice, error) {
 
 type Parser struct {
 	l   *Lexer
-	buf []Token
+	buf []token.Token
 }
 
 // Parse all items.
@@ -67,20 +69,20 @@ func (p *Parser) parseChildren(i Item) (Item, error) {
 }
 
 func (p *Parser) parseName(i Item) (Item, error) {
-	t := p.scanIgnore(TokenWhitespace, TokenLinefeed, TokenComment)
-	if t.Type == TokenEOF {
+	t := p.scanIgnore(token.Whitespace, token.Linefeed, token.Comment)
+	if t.Type == token.EOF {
 		return i, io.EOF
 	}
 	if t.Error() != nil {
 		return i, t.Error()
 	}
-	if t.Type == TokenBraceClose {
+	if t.Type == token.BraceClose {
 		return i, errEos
 	}
-	if t.Type == TokenBraceOpen {
+	if t.Type == token.BraceOpen {
 		return i, errSos
 	}
-	if t.Type != TokenQuotedValue && t.Type != TokenUnquotedValue {
+	if t.Type != token.QuotedValue && t.Type != token.UnquotedValue {
 		err := fmt.Errorf("line %d, column %d: expected quoted or unquoted value at beginning of item, got %s %#v", t.Line, t.Col, t.Type, t.Str)
 		return i, err
 	}
@@ -90,15 +92,15 @@ func (p *Parser) parseName(i Item) (Item, error) {
 
 func (p *Parser) parseArgs(i Item) (Item, error) {
 	for {
-		t := p.scanIgnore(TokenWhitespace, TokenComment)
-		if t.Type == TokenEOF {
+		t := p.scanIgnore(token.Whitespace, token.Comment)
+		if t.Type == token.EOF {
 			// valid Item end without any (more) args
 			return i, nil
 		}
-		if t.Type == TokenLinefeed {
+		if t.Type == token.Linefeed {
 			// valid end of args, but look ahead
-			t = p.scanIgnore(TokenWhitespace, TokenComment, TokenLinefeed)
-			if t.Type != TokenBraceClose && t.Type != TokenBraceOpen {
+			t = p.scanIgnore(token.Whitespace, token.Comment, token.Linefeed)
+			if t.Type != token.BraceClose && t.Type != token.BraceOpen {
 				// nah, we can't use this. put it back.
 				p.unscan(t)
 				return i, nil
@@ -108,13 +110,13 @@ func (p *Parser) parseArgs(i Item) (Item, error) {
 		if t.Error() != nil {
 			return i, t.Error()
 		}
-		if t.Type == TokenBraceOpen {
+		if t.Type == token.BraceOpen {
 			return i, errSos
 		}
-		if t.Type == TokenBraceClose {
+		if t.Type == token.BraceClose {
 			return i, errEos
 		}
-		if t.Type != TokenQuotedValue && t.Type != TokenUnquotedValue {
+		if t.Type != token.QuotedValue && t.Type != token.UnquotedValue {
 			err := fmt.Errorf("line %d, column %d: expected quoted or unquoted value as argument no. %d, got %s %#v", t.Line, t.Col, len(i.Args)+1, t.Type, t.Str)
 			return i, err
 		}
@@ -122,7 +124,7 @@ func (p *Parser) parseArgs(i Item) (Item, error) {
 	}
 }
 
-func (p *Parser) scan() (t Token) {
+func (p *Parser) scan() (t token.Token) {
 	if len(p.buf) > 0 {
 		t, p.buf = p.buf[len(p.buf)-1], p.buf[:len(p.buf)-1]
 		return
@@ -131,13 +133,13 @@ func (p *Parser) scan() (t Token) {
 	return p.l.Token
 }
 
-func (p *Parser) unscan(t Token) {
+func (p *Parser) unscan(t token.Token) {
 	p.buf = append(p.buf, t)
 }
 
-func (p *Parser) scanIgnore(ignore ...TokenType) Token {
+func (p *Parser) scanIgnore(ignore ...token.Type) token.Token {
 	t := p.scan()
-	for t.Type != TokenEOF && !t.Type.IsError() {
+	for t.Type != token.EOF && !t.Type.IsError() {
 		ignored := false
 		for _, it := range ignore {
 			if t.Type == it {

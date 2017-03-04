@@ -1,6 +1,6 @@
-//go:generate stringer -type TokenType
+//go:generate stringer -type Type
 
-package narg
+package token
 
 import (
 	"bytes"
@@ -8,35 +8,35 @@ import (
 	"strings"
 )
 
-type TokenType int
+type Type int
 
 const (
-	TokenEOF TokenType = iota
-	TokenLinefeed
-	TokenWhitespace
-	TokenComment
-	TokenBraceOpen
-	TokenBraceClose
-	TokenQuotedValue
-	TokenUnquotedValue
-	TokenInvalidValueMissingClosingQuote
-	TokenInvalidValueMissingSeparator
+	EOF Type = iota
+	Linefeed
+	Whitespace
+	Comment
+	BraceOpen
+	BraceClose
+	QuotedValue
+	UnquotedValue
+	InvalidValueMissingClosingQuote
+	InvalidValueMissingSeparator
 )
 
-func (tt TokenType) IsError() bool {
-	return tt == TokenInvalidValueMissingClosingQuote ||
-		tt == TokenInvalidValueMissingSeparator
+func (tt Type) IsError() bool {
+	return tt == InvalidValueMissingClosingQuote ||
+		tt == InvalidValueMissingSeparator
 }
 
-func (tt TokenType) Error(t Token) error {
+func (tt Type) Error(t Token) error {
 	if !tt.IsError() {
 		return nil
 	}
 	msg := "unsupported token"
 	switch tt {
-	case TokenInvalidValueMissingClosingQuote:
+	case InvalidValueMissingClosingQuote:
 		msg = "quoted value is missing closing quote"
-	case TokenInvalidValueMissingSeparator:
+	case InvalidValueMissingSeparator:
 		msg = "value is missing separator from next value"
 	}
 	return fmt.Errorf("line %d, column %d: %s: %#v", t.Line, t.Col, msg, t.Str)
@@ -46,7 +46,7 @@ type Token struct {
 	// Raw string including double quotes.
 	// Use String() for a cleaned up version.
 	Str  string
-	Type TokenType
+	Type Type
 	Line int
 	Col  int
 }

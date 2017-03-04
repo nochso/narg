@@ -1,2 +1,2 @@
-1:1 TokenUnquotedValue "\\"
-1:2 TokenBraceOpen "{"
+1:1 UnquotedValue "\\"
+1:2 BraceOpen "{"

@@ -3,6 +3,8 @@ package narg
 import (
 	"bytes"
 	"strings"
+
+	"github.com/nochso/narg/token"
 )
 
 // ItemSlice is a list of items.
@@ -56,10 +58,10 @@ func (i Item) String() string {
 func (i Item) writeString(buf *bytes.Buffer, indent int) {
 	prefix := strings.Repeat("\t", indent)
 	buf.WriteString(prefix)
-	buf.WriteString(Quote(i.Name))
+	buf.WriteString(token.Quote(i.Name))
 	for _, arg := range i.Args {
 		buf.WriteByte(' ')
-		buf.WriteString(Quote(arg))
+		buf.WriteString(token.Quote(arg))
 	}
 	if len(i.Children) > 0 {
 		buf.WriteString(" {\n")
