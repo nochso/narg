@@ -4,9 +4,9 @@ package token
 
 import "fmt"
 
-const _Type_name = "EOFLinefeedWhitespaceCommentBraceOpenBraceCloseQuotedValueUnquotedValueInvalidValueMissingClosingQuoteInvalidValueMissingSeparator"
+const _Type_name = "EOFLinefeedWhitespaceCommentBraceOpenBraceCloseQuotedValueUnquotedValueInvalid"
 
-var _Type_index = [...]uint8{0, 3, 11, 21, 28, 37, 47, 58, 71, 102, 130}
+var _Type_index = [...]uint8{0, 3, 11, 21, 28, 37, 47, 58, 71, 78}
 
 func (i Type) String() string {
 	if i < 0 || i >= Type(len(_Type_index)-1) {

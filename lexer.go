@@ -3,6 +3,7 @@ package narg
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"strings"
 	"unicode/utf8"
@@ -14,6 +15,7 @@ import (
 type Lexer struct {
 	// Token that was read after the latest successful call to Scan()
 	Token token.T
+	Err   error
 	buf   *bufio.Reader
 	line  int
 	col   int
@@ -45,7 +47,7 @@ func (l *Lexer) Scan() bool {
 	}
 	l.col += utf8.RuneCountInString(l.Token.Str[lastIndex:])
 
-	return l.Token.Type != token.EOF && !l.Token.Type.IsError()
+	return l.Token.Type != token.EOF && l.Err == nil
 }
 
 func (l *Lexer) scan() token.T {
@@ -68,7 +70,7 @@ func (l *Lexer) scan() token.T {
 		return l.scanWhile(r, token.Whitespace, isWhitespace)
 	}
 	t := l.scanWhile(r, token.UnquotedValue, isUnquotedValue)
-	return l.notFollowedBy(t, token.InvalidValueMissingSeparator, isQuote)
+	return l.notFollowedBy(t, "value is missing separator from next value", isQuote)
 }
 
 func (l *Lexer) scanWhile(start rune, tokenType token.Type, fn func(rune) bool) token.T {
@@ -104,13 +106,20 @@ func (l *Lexer) scanQuotedValue() token.T {
 		escaped = false
 	}
 	if r == eof {
-		return l.newToken(buf.String(), token.InvalidValueMissingClosingQuote)
+		t := l.newToken(buf.String(), token.Invalid)
+		return l.setErr(t, "quoted value is missing closing quote")
 	}
 	t := l.newToken(buf.String(), token.QuotedValue)
-	return l.notFollowedBy(t, token.InvalidValueMissingSeparator, invalidAfterQuotedValue)
+	return l.notFollowedBy(t, "value is missing separator from next value", invalidAfterQuotedValue)
 }
 
-func (l *Lexer) notFollowedBy(t token.T, invalidType token.Type, invalidFn func(rune) bool) token.T {
+func (l *Lexer) setErr(t token.T, err string) token.T {
+	l.Err = fmt.Errorf("line %d, column %d: %s: %#v", t.Line, t.Col, err, t.Str)
+	t.Type = token.Invalid
+	return t
+}
+
+func (l *Lexer) notFollowedBy(t token.T, err string, invalidFn func(rune) bool) token.T {
 	r := l.read()
 	if r == eof {
 		return t
@@ -120,8 +129,7 @@ func (l *Lexer) notFollowedBy(t token.T, invalidType token.Type, invalidFn func(
 		return t
 	}
 	t.Str += string(r)
-	t.Type = invalidType
-	return t
+	return l.setErr(t, err)
 }
 
 func (l *Lexer) newToken(str string, tokenType token.Type) token.T {

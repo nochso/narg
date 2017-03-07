@@ -19,28 +19,8 @@ const (
 	BraceClose
 	QuotedValue
 	UnquotedValue
-	InvalidValueMissingClosingQuote
-	InvalidValueMissingSeparator
+	Invalid
 )
-
-func (tt Type) IsError() bool {
-	return tt == InvalidValueMissingClosingQuote ||
-		tt == InvalidValueMissingSeparator
-}
-
-func (tt Type) Error(t T) error {
-	if !tt.IsError() {
-		return nil
-	}
-	msg := "unsupported token"
-	switch tt {
-	case InvalidValueMissingClosingQuote:
-		msg = "quoted value is missing closing quote"
-	case InvalidValueMissingSeparator:
-		msg = "value is missing separator from next value"
-	}
-	return fmt.Errorf("line %d, column %d: %s: %#v", t.Line, t.Col, msg, t.Str)
-}
 
 type T struct {
 	// Raw string including double quotes.
@@ -49,10 +29,6 @@ type T struct {
 	Type Type
 	Line int
 	Col  int
-}
-
-func (t T) Error() error {
-	return t.Type.Error(t)
 }
 
 func (t T) String() string {

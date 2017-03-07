@@ -59,8 +59,8 @@ func TestLexer_Scan(t *testing.T) {
 			}
 			act.WriteString(l.Token.DebugString())
 		}
-		if l.Token.Error() != nil {
-			c.T.Error(l.Token.Error())
+		if l.Err != nil {
+			c.T.Error(l.Err)
 		}
 		return act.Bytes()
 	}
@@ -84,8 +84,8 @@ func TestLexer_Scan_error(t *testing.T) {
 			act.WriteString(l.Token.DebugString())
 			act.WriteByte('\n')
 		}
-		if l.Token.Type.IsError() {
-			act.WriteString(l.Token.Error().Error())
+		if l.Err != nil {
+			act.WriteString(l.Err.Error())
 		}
 		return act.Bytes()
 	}

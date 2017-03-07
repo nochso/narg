@@ -73,8 +73,8 @@ func (p *Parser) parseName(i Item) (Item, error) {
 	if t.Type == token.EOF {
 		return i, io.EOF
 	}
-	if t.Error() != nil {
-		return i, t.Error()
+	if p.l.Err != nil {
+		return i, p.l.Err
 	}
 	if t.Type == token.BraceClose {
 		return i, errEos
@@ -107,8 +107,8 @@ func (p *Parser) parseArgs(i Item) (Item, error) {
 			}
 			// fall through to open/close brace
 		}
-		if t.Error() != nil {
-			return i, t.Error()
+		if p.l.Err != nil {
+			return i, p.l.Err
 		}
 		if t.Type == token.BraceOpen {
 			return i, errSos
@@ -139,7 +139,7 @@ func (p *Parser) unscan(t token.T) {
 
 func (p *Parser) scanIgnore(ignore ...token.Type) token.T {
 	t := p.scan()
-	for t.Type != token.EOF && !t.Type.IsError() {
+	for t.Type != token.EOF && t.Type != token.Invalid {
 		ignored := false
 		for _, it := range ignore {
 			if t.Type == it {
