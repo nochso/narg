@@ -1,7 +1,6 @@
 package narg
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/kylelemons/godebug/diff"
@@ -44,12 +43,10 @@ users {
 	id 4
 	name Todd
 }`
-	buf := &bytes.Buffer{}
-	err := Encode(buf, v)
+	act, err := EncodeString(v)
 	if err != nil {
 		t.Fatal(err)
 	}
-	act := buf.String()
 	if exp != act {
 		t.Error(diff.Diff(exp, act))
 	}

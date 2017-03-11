@@ -1,6 +1,7 @@
 package narg
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"reflect"
@@ -27,6 +28,13 @@ func Encode(w io.Writer, v interface{}) error {
 		item.writeString(w, 0)
 	}
 	return nil
+}
+
+// EncodeString encodes the given value as a string.
+func EncodeString(v interface{}) (string, error) {
+	buf := &bytes.Buffer{}
+	err := Encode(buf, v)
+	return buf.String(), err
 }
 
 func encodeStruct(name string, v reflect.Value) (Item, error) {
