@@ -40,6 +40,9 @@ func (t T) String() string {
 // If needed s is surrounded with double quotes.
 // Backslashes \ and double quotes " will be escaped with backslashes.
 func Quote(s string) string {
+	if len(s) == 0 {
+		return `""`
+	}
 	if !strings.ContainsAny(s, "#\"{} \t\r\n") {
 		return s
 	}
