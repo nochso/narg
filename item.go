@@ -2,6 +2,8 @@ package narg
 
 import (
 	"bytes"
+	"fmt"
+	"io"
 	"strings"
 
 	"github.com/nochso/narg/token"
@@ -55,21 +57,18 @@ func (i Item) String() string {
 	return buf.String()
 }
 
-func (i Item) writeString(buf *bytes.Buffer, indent int) {
+func (i Item) writeString(w io.Writer, indent int) {
 	prefix := strings.Repeat("\t", indent)
-	buf.WriteString(prefix)
-	buf.WriteString(token.Quote(i.Name))
+	fmt.Fprintf(w, "%s%s", prefix, token.Quote(i.Name))
 	for _, arg := range i.Args {
-		buf.WriteByte(' ')
-		buf.WriteString(token.Quote(arg))
+		fmt.Fprintf(w, " %s", token.Quote(arg))
 	}
 	if len(i.Children) > 0 {
-		buf.WriteString(" {\n")
+		fmt.Fprint(w, " {\n")
 		for _, child := range i.Children {
-			child.writeString(buf, indent+1)
-			buf.WriteByte('\n')
+			child.writeString(w, indent+1)
+			fmt.Fprintln(w)
 		}
-		buf.WriteString(prefix)
-		buf.WriteString("}")
+		fmt.Fprintf(w, "%s}", prefix)
 	}
 }
