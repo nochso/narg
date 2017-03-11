@@ -8,11 +8,13 @@ import (
 	"github.com/nochso/narg/token"
 )
 
+// Parse narg input into an ItemSlice.
 func Parse(r io.Reader) (ItemSlice, error) {
 	p := &Parser{l: NewLexer(r)}
 	return p.Parse()
 }
 
+// Parser turns tokens into items.
 type Parser struct {
 	l   *Lexer
 	buf []token.T

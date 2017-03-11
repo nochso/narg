@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Encode the given value by writing its narg representation to w.
 func Encode(w io.Writer, v interface{}) error {
 	rv := reflect.ValueOf(v)
 	for rv.Kind() == reflect.Ptr {
