@@ -1,6 +1,10 @@
 package token
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/kylelemons/godebug/pretty"
+)
 
 func TestToken_String(t *testing.T) {
 	tok := T{
@@ -21,5 +25,24 @@ func TestToken_String(t *testing.T) {
 	act = tok.DebugString()
 	if exp != act {
 		t.Fatalf("expected %#v; got %#v", exp, act)
+	}
+}
+
+var quoteTests = []struct {
+	in  string
+	exp string
+}{
+	{"", `""`},
+	{"abc", "abc"},
+	{"a b c", `"a b c"`},
+	{`"some wise quote"`, `"\"some wise quote\""`},
+}
+
+func TestQuote(t *testing.T) {
+	for _, qt := range quoteTests {
+		act := Quote(qt.in)
+		if act != qt.exp {
+			t.Error(pretty.Compare(act, qt.exp))
+		}
 	}
 }
