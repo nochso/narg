@@ -46,3 +46,13 @@ func TestQuote(t *testing.T) {
 		}
 	}
 }
+
+func TestUnquote(t *testing.T) {
+	for _, qt := range quoteTests {
+		// reuse Quote tests by reversing test input
+		act := Unquote(qt.exp)
+		if act != qt.in {
+			t.Error(pretty.Compare(act, qt.in))
+		}
+	}
+}
