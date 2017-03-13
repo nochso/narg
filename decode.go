@@ -1,6 +1,7 @@
 package narg
 
 import (
+	"encoding"
 	"fmt"
 	"io"
 	"reflect"
@@ -26,6 +27,11 @@ func Decode(r io.Reader, v interface{}) error {
 }
 
 func decStruct(v reflect.Value, item *Item) error {
+	if v.CanAddr() && v.Addr().CanInterface() {
+		if u, ok := v.Addr().Interface().(encoding.TextUnmarshaler); ok {
+			return u.UnmarshalText([]byte(item.Args[0]))
+		}
+	}
 	for i := 0; i < v.NumField(); i++ {
 		f := v.Field(i)
 		key := strings.ToLower(v.Type().Field(i).Name)

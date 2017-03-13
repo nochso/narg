@@ -4,20 +4,22 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/kylelemons/godebug/pretty"
 )
 
 type testConf struct {
-	Name   string
-	Port   int
-	Debug  bool
-	Float  float32
-	Hosts  []string
-	Ports  []int
-	PortsU []uint8
-	Admin  testUser
-	Users  []testUser
+	Name     string
+	Port     int
+	Debug    bool
+	Float    float32
+	Hosts    []string
+	Ports    []int
+	PortsU   []uint8
+	Creation time.Time
+	Admin    testUser
+	Users    []testUser
 }
 
 type testUser struct {
@@ -28,13 +30,14 @@ type testUser struct {
 func TestDecode(t *testing.T) {
 	act := &testConf{}
 	exp := &testConf{
-		Name:   "foo",
-		Port:   80,
-		Debug:  true,
-		Float:  3.14,
-		Hosts:  []string{"a", "bee", "cee e"},
-		Ports:  []int{1024, 1025},
-		PortsU: []uint8{0xff, 0xff},
+		Name:     "foo",
+		Port:     80,
+		Debug:    true,
+		Float:    3.14,
+		Hosts:    []string{"a", "bee", "cee e"},
+		Ports:    []int{1024, 1025},
+		PortsU:   []uint8{0xff, 0xff},
+		Creation: time.Date(1999, time.December, 31, 23, 59, 59, 0, time.UTC),
 		Admin: testUser{
 			ID:   1,
 			Name: `Phil "Tandy" Miller`,
@@ -52,6 +55,7 @@ float 3.14
 hosts a bee "cee e"
 ports 1024 1025
 portsu 0xff 255
+creation 1999-12-31T23:59:59Z
 admin {
 	id 1
 	name "Phil \"Tandy\" Miller"

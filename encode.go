@@ -2,6 +2,7 @@ package narg
 
 import (
 	"bytes"
+	"encoding"
 	"fmt"
 	"io"
 	"reflect"
@@ -40,6 +41,15 @@ func EncodeString(v interface{}) (string, error) {
 func encodeStruct(name string, v reflect.Value) (Item, error) {
 	itm := Item{}
 	itm.Name = name
+
+	if v.CanAddr() && v.Addr().CanInterface() {
+		if m, ok := v.Addr().Interface().(encoding.TextMarshaler); ok {
+			b, err := m.MarshalText()
+			itm.Args = append(itm.Args, string(b))
+			return itm, err
+		}
+	}
+
 	var err error
 	for i := 0; i < v.NumField(); i++ {
 		ft := v.Type().Field(i)
