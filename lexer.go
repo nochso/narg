@@ -3,7 +3,6 @@ package narg
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strings"
 	"unicode/utf8"
 
@@ -25,13 +24,9 @@ type Lexer struct {
 var eof = rune(0)
 
 // NewLexer returns a new Lexer for parsing tokens.
-func NewLexer(r io.Reader) *Lexer {
-	b, err := ioutil.ReadAll(r)
-	if err != nil {
-		return &Lexer{Err: err}
-	}
+func NewLexer(s string) *Lexer {
 	return &Lexer{
-		str:  string(b),
+		str:  s,
 		line: 1,
 		col:  1,
 	}

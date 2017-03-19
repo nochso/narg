@@ -3,7 +3,6 @@ package narg
 import (
 	"bytes"
 	"flag"
-	"strings"
 	"testing"
 
 	"github.com/nochso/golden"
@@ -22,8 +21,7 @@ var benchTest = `unquoted "quoted value" {
 
 func BenchmarkLexer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		r := strings.NewReader(benchTest)
-		l := NewLexer(r)
+		l := NewLexer(benchTest)
 		for l.Scan() {
 		}
 	}
@@ -31,7 +29,7 @@ func BenchmarkLexer(b *testing.B) {
 
 func TestLexer_read(t *testing.T) {
 	t.Parallel()
-	l := NewLexer(strings.NewReader("a"))
+	l := NewLexer("a")
 	r := l.read()
 	if r != 'a' {
 		cmp(t, 'a', r)
@@ -45,7 +43,7 @@ func TestLexer_read(t *testing.T) {
 
 func TestLexer_unread(t *testing.T) {
 	t.Parallel()
-	l := NewLexer(strings.NewReader("a"))
+	l := NewLexer("a")
 	r := l.read()
 	if r != 'a' {
 		cmp(t, 'a', r)
@@ -63,9 +61,7 @@ func TestLexer_unread(t *testing.T) {
 func TestLexer_Scan(t *testing.T) {
 	t.Parallel()
 	tester := func(c golden.Case) []byte {
-		r := c.In.Reader()
-		defer r.Close()
-		l := NewLexer(r)
+		l := NewLexer(c.In.String())
 		act := &bytes.Buffer{}
 		for l.Scan() {
 			if act.Len() > 0 {
@@ -90,9 +86,7 @@ func TestLexer_Scan(t *testing.T) {
 func TestLexer_Scan_error(t *testing.T) {
 	t.Parallel()
 	tester := func(c golden.Case) []byte {
-		r := c.In.Reader()
-		defer r.Close()
-		l := NewLexer(r)
+		l := NewLexer(c.In.String())
 		act := &bytes.Buffer{}
 		for l.Scan() {
 			act.WriteString(l.Token.DebugString())
