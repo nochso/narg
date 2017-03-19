@@ -15,6 +15,20 @@ func init() {
 
 var update = flag.Bool("update", false, "update golden test files")
 
+var benchTest = `unquoted "quoted value" {
+	   # comment after whitespace
+	   sub { "answer" 42 }
+}`
+
+func BenchmarkLexer(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		r := strings.NewReader(benchTest)
+		l := NewLexer(r)
+		for l.Scan() {
+		}
+	}
+}
+
 func TestLexer_read(t *testing.T) {
 	t.Parallel()
 	l := NewLexer(strings.NewReader("a"))
