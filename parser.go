@@ -5,18 +5,12 @@ import (
 	"fmt"
 	"io"
 
-	"io/ioutil"
-
 	"github.com/nochso/narg/token"
 )
 
 // Parse narg input into an ItemSlice.
-func Parse(r io.Reader) (ItemSlice, error) {
-	b, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-	p := &Parser{l: NewLexer(string(b))}
+func Parse(s string) (ItemSlice, error) {
+	p := &Parser{l: NewLexer(s)}
 	return p.Parse()
 }
 

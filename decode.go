@@ -3,16 +3,15 @@ package narg
 import (
 	"encoding"
 	"fmt"
-	"io"
 	"reflect"
 	"strconv"
 	"strings"
 )
 
-// Decode narg input r into a given struct v.
+// Decode narg input s into a given struct v.
 // v must be a pointer to the struct you want to decode into.
-func Decode(r io.Reader, v interface{}) error {
-	items, err := Parse(r)
+func Decode(s string, v interface{}) error {
+	items, err := Parse(s)
 	if err != nil {
 		return err
 	}

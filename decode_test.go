@@ -2,7 +2,6 @@ package narg
 
 import (
 	"reflect"
-	"strings"
 	"testing"
 	"time"
 
@@ -66,7 +65,7 @@ users {
 }
 users 4 Todd
 `
-	err := Decode(strings.NewReader(in), act)
+	err := Decode(in, act)
 	if err != nil {
 		t.Fatal(err)
 	}

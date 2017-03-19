@@ -1,10 +1,8 @@
 package narg
 
 import (
-	"bytes"
-	"testing"
-
 	"io/ioutil"
+	"testing"
 
 	"github.com/nochso/golden"
 )
@@ -12,9 +10,7 @@ import (
 func TestParse_Ok(t *testing.T) {
 	golden.TestDir(t, "parser/ok", func(tc golden.Case) {
 		tc.T.Parallel()
-		r := tc.In.Reader()
-		doc, err := Parse(r)
-		r.Close()
+		doc, err := Parse(tc.In.String())
 		if err != nil {
 			tc.T.Error(err)
 		}
@@ -28,9 +24,7 @@ func TestParse_Ok(t *testing.T) {
 func TestParse_Error(t *testing.T) {
 	golden.TestDir(t, "parser/error", func(tc golden.Case) {
 		tc.T.Parallel()
-		r := tc.In.Reader()
-		_, err := Parse(r)
-		r.Close()
+		_, err := Parse(tc.In.String())
 		if *update {
 			tc.Out.Update([]byte(err.Error()))
 		}
@@ -39,13 +33,14 @@ func TestParse_Error(t *testing.T) {
 }
 
 func BenchmarkParse(b *testing.B) {
-	in, err := ioutil.ReadFile("test-fixtures/parser/ok/2-typical/caddy.txt")
+	f, err := ioutil.ReadFile("test-fixtures/parser/ok/2-typical/caddy.txt")
 	if err != nil {
 		b.Error(err)
 		return
 	}
+	in := string(f)
 	for i := 0; i < b.N; i++ {
-		_, err := Parse(bytes.NewReader(in))
+		_, err := Parse(in)
 		if err != nil {
 			b.Fatal(err)
 		}
