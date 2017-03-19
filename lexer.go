@@ -1,10 +1,9 @@
 package narg
 
 import (
-	"bufio"
-	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"strings"
 	"unicode/utf8"
 
@@ -16,7 +15,9 @@ type Lexer struct {
 	// Token that was read after the latest successful call to Scan()
 	Token token.T
 	Err   error
-	buf   *bufio.Reader
+	str   string
+	start int
+	pos   int
 	line  int
 	col   int
 }
@@ -25,8 +26,12 @@ var eof = rune(0)
 
 // NewLexer returns a new Lexer for parsing tokens.
 func NewLexer(r io.Reader) *Lexer {
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		return &Lexer{Err: err}
+	}
 	return &Lexer{
-		buf:  bufio.NewReader(r),
+		str:  string(b),
 		line: 1,
 		col:  1,
 	}
@@ -54,46 +59,41 @@ func (l *Lexer) scan() token.T {
 	r := l.read()
 	switch r {
 	case eof:
-		return l.newToken(string(r), token.EOF)
+		return l.newToken(token.EOF)
 	case '{':
-		return l.newToken(string(r), token.BraceOpen)
+		return l.newToken(token.BraceOpen)
 	case '}':
-		return l.newToken(string(r), token.BraceClose)
+		return l.newToken(token.BraceClose)
 	case '\n':
-		return l.newToken(string(r), token.Linefeed)
+		return l.newToken(token.Linefeed)
 	case '#':
-		return l.scanWhile(r, token.Comment, continuesComment)
+		return l.scanWhile(token.Comment, continuesComment)
 	case '"':
 		return l.scanQuotedValue()
 	}
 	if isWhitespace(r) {
-		return l.scanWhile(r, token.Whitespace, isWhitespace)
+		return l.scanWhile(token.Whitespace, isWhitespace)
 	}
-	t := l.scanWhile(r, token.UnquotedValue, isUnquotedValue)
+	t := l.scanWhile(token.UnquotedValue, isUnquotedValue)
 	return l.notFollowedBy(t, "value is missing separator from next value", isQuote)
 }
 
-func (l *Lexer) scanWhile(start rune, tokenType token.Type, fn func(rune) bool) token.T {
-	buf := &bytes.Buffer{}
-	buf.WriteRune(start)
+func (l *Lexer) scanWhile(tokenType token.Type, fn func(rune) bool) token.T {
 	r := l.read()
 	for r != eof {
 		if !fn(r) {
 			l.unread()
 			break
 		}
-		buf.WriteRune(r)
 		r = l.read()
 	}
-	return l.newToken(buf.String(), tokenType)
+	return l.newToken(tokenType)
 }
 
 func (l *Lexer) scanQuotedValue() token.T {
-	buf := bytes.NewBufferString(`"`)
 	r := l.read()
 	escaped := false
 	for r != eof {
-		buf.WriteRune(r)
 		if !escaped && r == '"' {
 			break
 		}
@@ -106,10 +106,10 @@ func (l *Lexer) scanQuotedValue() token.T {
 		escaped = false
 	}
 	if r == eof {
-		t := l.newToken(buf.String(), token.Invalid)
+		t := l.newToken(token.Invalid)
 		return l.setErr(t, "quoted value is missing closing quote")
 	}
-	t := l.newToken(buf.String(), token.QuotedValue)
+	t := l.newToken(token.QuotedValue)
 	return l.notFollowedBy(t, "value is missing separator from next value", invalidAfterQuotedValue)
 }
 
@@ -132,25 +132,37 @@ func (l *Lexer) notFollowedBy(t token.T, err string, invalidFn func(rune) bool) 
 	return l.setErr(t, err)
 }
 
-func (l *Lexer) newToken(str string, tokenType token.Type) token.T {
-	return token.T{
-		Str:  str,
+func (l *Lexer) newToken(tokenType token.Type) token.T {
+	tok := token.T{
+		Str:  l.str[l.start:l.pos],
 		Type: tokenType,
 		Line: l.line,
 		Col:  l.col,
 	}
+	l.start = l.pos
+	return tok
 }
 
 func (l *Lexer) read() rune {
-	r, _, err := l.buf.ReadRune()
-	if err != nil {
+	if len(l.str[l.pos:]) == 0 {
 		return eof
 	}
+	r, s := utf8.DecodeRuneInString(l.str[l.pos:])
+	l.pos += s
 	return r
 }
 
 func (l *Lexer) unread() error {
-	return l.buf.UnreadRune()
+	if l.pos == 0 {
+		return io.EOF
+	}
+	_, s := utf8.DecodeLastRuneInString(l.str[:l.pos])
+	l.pos -= s
+	if l.pos < l.start {
+		l.pos = l.start
+		return io.EOF
+	}
+	return nil
 }
 
 func isWhitespace(r rune) bool {
